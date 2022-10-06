@@ -570,9 +570,11 @@ if __name__ == '__main__':
         test_loss = []
         for k in range(0, 550, 1):
             f1 = np.fromfile("./data/2D/0pinsan_test_time/record_1.2ms_shot102_2001x550.bin",dtype=np.float32).reshape(550, 2001)
+            #f1 = np.fromfile("./data/2D/0pinsan_train_time/record_1.2ms_shot060_2001x550.bin", dtype=np.float32).reshape(550, 2001)#Training loss
             x = f1[k, ::]
 
-            f2 = np.fromfile("./data/2D/0pinsan_test_notime/record_0.2ms_no_time_dispersion_shot102_2001x550.bin",dtype=np.float32).reshape(550, 2001)  # 1550x2001 double
+            f2 = np.fromfile("./data/2D/0pinsan_test_notime/record_0.2ms_no_time_dispersion_shot102_2001x550.bin",dtype=np.float32).reshape(550, 2001)  
+            #f2 = np.fromfile("./data/2D/0pinsan_train_notime/record_0.2ms_no_time_dispersion_shot060_2001x550.bin",dtype=np.float32).reshape(550, 2001) #Training loss
             y = f2[k, ::]
 
             x_normalization = Normalization(mean_val=np.mean(x),
