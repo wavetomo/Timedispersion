@@ -541,7 +541,19 @@ class Dataset(data.Dataset):
             return X, Y
         else:
             return X
+       
+from skimage.metrics import structural_similarity, peak_signal_noise_ratio
+def PSNR(true_image, real_image):
+    true_image = true_image.astype(np.float64)
+    real_image = real_image.astype(np.float64)
 
+    psnr = peak_signal_noise_ratio(true_image, real_image, data_range=true_image.max()-true_image.min())
+    return psnr
+def SSIM(true_image, real_image):
+    true_image = true_image.astype(np.float64)
+    real_image = real_image.astype(np.float64)
+
+    ssim = structural_similarity(true_image, real_image, data_range=true_image.max()-true_image.min())
 
 if __name__ == '__main__':
 
@@ -574,13 +586,13 @@ if __name__ == '__main__':
     with torch.no_grad():
         test_loss = []
         for k in range(0, 325, 1):
-
-            f1 = np.fromfile("./data/2D/SEAM_time_test7/record_shot31_time_dispersion2001x325.bin", dtype=np.float32).reshape(325, 2001)  # 1550x2001 double
-            #f1 = np.fromfile("/data/hany/0pinsan_test_y/record_1.2ms_shot102_2001x550.bin", dtype=np.float32).reshape(550, 2001)
+            
+            f1 = np.fromfile("./data/2D/SEAM_time_test7/record_shot31_time_dispersion2001x325.bin", dtype=np.float32).reshape(325, 2001)  
+            #f1 = np.fromfile("./data/2D/SEAM_time_train5/record_shot61_time_dispersion2001x325.bin", dtype=np.float32).reshape(325, 2001)#Training loss
             x = f1[k, ::]
 
             f2 = np.fromfile("./data/2D/SEAM_notime_test7/record_shot31_2ms2001x325.bin", dtype=np.float32).reshape(325, 2001)
-            #f2 = np.fromfile("/data/hany/0pinsan_test_x/record_0.2ms_no_time_dispersion_shot102_2001x550.bin",dtype=np.float32).reshape(550, 2001)  # 1550x2001 double
+            #f2 = np.fromfile("./data/2D/SEAM_notime_train5/record_shot61_2ms2001x325.bin", dtype=np.float32).reshape(325, 2001)  # Training loss
             y = f2[k, ::]
 
             x_normalization = Normalization(mean_val=np.mean(x),
@@ -653,6 +665,9 @@ if __name__ == '__main__':
         predicted_y = predicted_y.numpy()
         true_y = true_y.numpy()
         
+        psnr = PSNR(true_y[:, 0], predicted_y[:, 0])
+        ssim = SSIM(true_y[:, 0], predicted_y[:, 0])
+        print("PSNR: {:.4f}\nSSIM: {:0.4f}".format(psnr, ssim))
         #######################
         #fig, ax = plt.subplots()
         #fig = plt.figure(figsize=(10,18),dpi=180)
